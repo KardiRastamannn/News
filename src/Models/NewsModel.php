@@ -47,19 +47,6 @@ class NewsModel
     }
 
     public function deleteNew(int $id): ?int{
-        // 1. Lekérjük a hír adatait, hogy tudjuk a kép nevét
-        // $news = $this->connection->pdoSelect("SELECT image FROM news WHERE news_id = ?", [$id]);
-        // if ($news && !empty($news[0]['image'])) {
-        //     $filePath = __DIR__ . '/../../public/' . ltrim($news[0]['image'], '/');
-
-        //     // 2. Megpróbáljuk törölni a képet a fájlrendszerből
-        //     if (file_exists($filePath)) {
-        //         unlink($filePath);
-        //     }
-        // }
-        // 3. Töröljük az adatbázisból a hírt
-       // var_dump($this->connection->pdoQuery("DELETE FROM news WHERE news_id = ?", [$id]));die;
-
         return $this->connection->pdoQuery("DELETE FROM news WHERE news_id = ?", [$id]);
     }
 

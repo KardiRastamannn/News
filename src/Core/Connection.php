@@ -4,7 +4,7 @@ use PDO;
 use PDOExceptions;
  class Connection {
 
-	private string $host = 'localhost'; // This could be in a config file.
+	private string $host = 'localhost'; 
 	private string $db = 'newportal';
 	private string $user = 'root';
 	private string $pass = '';
@@ -27,12 +27,8 @@ use PDOExceptions;
 		 	die("Adatbázis kapcsolat sikertelen: " . $e->getMessage());
 		}
 	}
-
-	public function getConnection(): ?PDO
-	{
-		return $this->pdo;
-	}
-
+	
+	// Minden adatbázis művelethez ezt kell használni, kivéve a selectekhez. Visszatérési értéke a módosított sorok száma.
 	public function pdoQuery($query, $values = []): int {
 		$affectedRows = 0;
 
@@ -42,16 +38,15 @@ use PDOExceptions;
 				$affectedRows = $stmt->rowCount();
 			}
 		}
-	
 		return $affectedRows; // 0 vagy több
 	}
-
+	
+	// Ezt a műveletet kell használni amikor listát szeretnénk lekérdezni.
 	public function pdoSelect(string $query, array $values = []): array {
 		$stmt = $this->pdo->prepare($query);
 		$stmt->execute($values);
 		$result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 		$this->pdo = null;
-
 		return $result;
 	}
 }

@@ -10,35 +10,27 @@ class GuestController
     private NewsModel $newsModel;
     private AuthService $auth;
 
-    public function __construct(Connection $Connection)
-    {
+    public function __construct(Connection $Connection){
         $this->newsModel = new NewsModel($Connection);
         $this->auth = new AuthService($Connection);
     }
-
-    public function showHomePage()
-    {
-        // echo '<pre>';
-        // var_dump($this->newsModel->getPublishedNews());die;
-        // echo '</pre>';
-
+    // Homepage betöltése
+    public function showHomePage(){
+ 
         $user = $this->auth->getUser();
         $content = renderView('guest_home', [
             'news' => $this->newsModel->getPublishedNews(),
             'user'  => $user,
         ]);
-    
-        // AJAX kérés esetén csak a tartalom térjen vissza
-        if (isAjaxRequest()) return $content;
 
-        // Normál oldalbetöltés esetén jöhet a layout
-      
+        if (isAjaxRequest()) return $content;    
+
         return renderLayout($content, [
             'user' => $user,
             'extraCss' => '',
         ]);
     }
-
+    // Hír részleteinek betöltése
     public function showNew(int $id)
     {
         $new = $this->newsModel->getPublishedNewById($id);
@@ -50,10 +42,7 @@ class GuestController
             'new'  => $new,
         ]);
     
-        // AJAX kérés esetén csak a tartalom térjen vissza
         if (isAjaxRequest()) return $content;
-
-        // Normál oldalbetöltés esetén jöhet a layout
       
         return renderLayout($content, [
             'user' => $this->auth->getUser(),

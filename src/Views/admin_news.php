@@ -33,7 +33,6 @@
             <table class="table table-hover">
                 <thead>
                     <tr>
-                        <!-- <th>ID</th> -->
                         <th>Cím</th>
                         <th>Rövid bevezető</th>
                         <th>Szerző</th>
@@ -49,7 +48,6 @@
                     <?php else: ?>
                         <?php foreach ($news as $new): ?>
                         <tr data-new-id="<?= htmlspecialchars($new['news_id']) ?>">
-                            <!-- <td><?= htmlspecialchars($new['news_id']) ?></td> -->
                             <td><?= htmlspecialchars($new['title']) ?></td>
                             <td><?= htmlspecialchars($new['intro']) ?></td>
                             <td><?= htmlspecialchars($new['author']) ?></td>
@@ -176,7 +174,7 @@
         if (text.trim() > 0 ) {
           showToast('Hír törölve!', 'success');
           sessionStorage.setItem('toastMessage', 'Hír törölve!');
-          sessionStorage.setItem('toastType', 'success'); // vagy window.location.href = ...
+          sessionStorage.setItem('toastType', 'success');
           location.reload();
         } else {
           showToast('Hiba történt a törléskor.', 'danger');
@@ -210,6 +208,7 @@
       .catch(() => showToast('Hálózati hiba!', 'danger'));
     });
 
+    // Kereső a hírekhez
     const searchInput = document.getElementById("newsSearchInput");
     const tableBody = document.getElementById("news-table-body");
 

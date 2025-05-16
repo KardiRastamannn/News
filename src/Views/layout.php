@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hírek és Blog</title>
+    <title>Hírekog</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -109,70 +109,72 @@ main {
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- AJAX navigáció (opcionális) -->
+    <!-- AJAX navigáció -->
     <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const container = document.getElementById('ajax-content');
+        document.addEventListener('DOMContentLoaded', function () {
+            const container = document.getElementById('ajax-content');
 
-        document.querySelectorAll('a[href^="/"]').forEach(link => {
-            link.addEventListener('click', function (e) {
-                if (!link.classList.contains('no-ajax')) {
-                    e.preventDefault();
-                    fetch(link.href, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
-                        .then(response => response.text())
-                        .then(html => {
-                            container.innerHTML = html;
-                            history.pushState(null, '', link.href);
-                        });
-                }
+            document.querySelectorAll('a[href^="/"]').forEach(link => {
+                link.addEventListener('click', function (e) {
+                    if (!link.classList.contains('no-ajax')) {
+                        e.preventDefault();
+                        fetch(link.href, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                            .then(response => response.text())
+                            .then(html => {
+                                container.innerHTML = html;
+                                history.pushState(null, '', link.href);
+                            });
+                    }
+                });
+            });
+
+            window.addEventListener('popstate', () => {
+                fetch(location.pathname, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                    .then(response => response.text())
+                    .then(html => container.innerHTML = html);
             });
         });
 
-        window.addEventListener('popstate', () => {
-            fetch(location.pathname, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
-                .then(response => response.text())
-                .then(html => container.innerHTML = html);
-        });
-    });
+        //Felhasználónak visszajelzés üzenet formájában
+        function showToast(message, type = 'success') {
+            const toastEl = document.getElementById('ajax-toast');
+            const toastBody = document.getElementById('ajax-toast-body');
 
-    function showToast(message, type = 'success') {
-        const toastEl = document.getElementById('ajax-toast');
-        const toastBody = document.getElementById('ajax-toast-body');
+            // Színt állítjuk a típus alapján
+            toastEl.classList.remove('bg-success', 'bg-danger', 'bg-info');
+            toastEl.classList.add('bg-' + type);
 
-        // Színt állítjuk a típus alapján
-        toastEl.classList.remove('bg-success', 'bg-danger', 'bg-info');
-        toastEl.classList.add('bg-' + type);
+            toastBody.textContent = message;
 
-        toastBody.textContent = message;
-
-        const toast = new bootstrap.Toast(toastEl);
-        toast.show();
-    }
-
-    document.addEventListener('click', function (e) {
-    if (e.target.matches('a[href="/logout"]')) {
-        e.preventDefault();
-        fetch('/logout', {
-            method: 'POST',
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
+            const toast = new bootstrap.Toast(toastEl);
+            toast.show();
+        }
+        // Login link megakadályozása, hogy AJAX-al fusson le helyette.
+        document.addEventListener('click', function (e) {
+            if (e.target.matches('a[href="/logout"]')) {
+                e.preventDefault();
+                fetch('/logout', {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                }).then(() => {
+                    // Teljes oldal újratöltés, hogy a layout is frissüljön
+                    window.location.href = '/';
+                });
             }
-        }).then(() => {
-            // Teljes oldal újratöltés, hogy a layout is frissüljön
-            window.location.href = '/';
         });
-    }
-});
-document.addEventListener('DOMContentLoaded', function () {
-    const message = sessionStorage.getItem('toastMessage');
-    const type = sessionStorage.getItem('toastType');
+        //Toast kezelése
+        document.addEventListener('DOMContentLoaded', function () {
+            const message = sessionStorage.getItem('toastMessage');
+            const type = sessionStorage.getItem('toastType');
 
-    if (message) {
-        showToast(message, type || 'success');
-        sessionStorage.removeItem('toastMessage');
-        sessionStorage.removeItem('toastType');
-    }
-});
+            if (message) {
+                showToast(message, type || 'success');
+                sessionStorage.removeItem('toastMessage');
+                sessionStorage.removeItem('toastType');
+            }
+        });
     </script>
 </body>
 </html>

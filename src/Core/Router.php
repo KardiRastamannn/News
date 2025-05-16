@@ -12,11 +12,7 @@ class Router
         $this->container = $container;
     }
 
-    /**
-     * Új útvonal hozzáadása
-     * @param string $path
-     * @param callable|array $handler
-     */
+    //Új útvonal hozzáadása
     public function add(string $path, $handler): void
     {
         $this->routes[$path] = [
@@ -25,19 +21,13 @@ class Router
         ];
     }
 
-    /**
-     * 404 hibakezelő regisztrálása
-     */
-    public function addErrorHandler(int $code, callable $handler): void
-    {
+    //404 hibakezelő regisztrálása
+    public function addErrorHandler(int $code, callable $handler): void {
         $this->errorHandlers[$code] = $handler;
     }
 
-    /**
-     * Kérés feldolgozása
-     */
-    public function dispatch(string $url): string
-    {
+    //Kérés feldolgozása
+    public function dispatch(string $url): string {
         $url = $this->normalizePath($url);
     
         foreach ($this->routes as $route) {
@@ -49,9 +39,8 @@ class Router
     
         return $this->dispatchError(404);
     }
-
-    private function invokeHandler(array $handler, array $params = []): string
-    {
+    //Meghívja a megfelelő vezérlő (controller) osztály adott metódusát.
+    private function invokeHandler(array $handler, array $params = []): string {
         try {
             $className = $handler[0];
             $methodName = $handler[1];
@@ -62,18 +51,14 @@ class Router
                 throw new \Exception("Method not found: $methodName in $className");
             }
             $result = call_user_func_array([$controller, $methodName], $params);
-            return is_string($result) ? $result : json_encode($result); // 👈 itt a változtatás
-           // return call_user_func_array([$controller, $methodName], array_values($params)); //vagy sima params array value nélkül
+            return is_string($result) ? $result : json_encode($result);
         } catch (\Exception $e) {
             return $this->dispatchError(500, $e->getMessage());
         }
     }
 
-    /**
-     * Hibakezelés
-     */
-    private function dispatchError(int $code, string $message = ''): string
-    {
+    //Hibakezelés
+    private function dispatchError(int $code, string $message = ''): string {
         http_response_code($code);
     
         if (isset($this->errorHandlers[$code])) {
@@ -84,18 +69,15 @@ class Router
             return "HTTP $code Error: $message";
         }
     }
-    
 
-    /**
-     * URL normalizálás
-     */
-    private function normalizePath(string $path): string
-    {
+    //URL normalizálás
+    private function normalizePath(string $path): string {
         $path = trim($path, '/');
         $path = filter_var($path, FILTER_SANITIZE_URL);
         return '/' . strtolower($path);
     }
 
+    // Ellenőrzi, hogy az aktuális kérés illeszkedik-e a megadott útvonalhoz.
     private function matchPath(string $routePath, string $requestPath, array &$params = []): bool {
         $routeParts = explode('/', trim($routePath, '/'));
         $requestParts = explode('/', trim($requestPath, '/'));

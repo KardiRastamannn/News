@@ -55,7 +55,7 @@ class Container
             throw new \Exception("Unable to resolve class: {$class}. Error: " . $e->getMessage());
         }
     }
-
+    // DI Injections
 	public function addInjections(){
 		$this->bind(News\Core\Connection::class, function() {
 			return new News\Core\Connection();

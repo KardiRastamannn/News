@@ -10,21 +10,18 @@ class NewsController
     private AuthService $auth;
 
 
-    public function __construct(Connection $connection)
-    {
+    public function __construct(Connection $connection){
         $this->newsModel = new NewsModel($connection);
         $this->auth = new AuthService($connection);
     }
-
-	public function handleRequest()
-    {   
+    // Minden kérés ide érkezik be és ez dönti el mi lesz a továbbiakban.
+	public function handleRequest(){   
         if (!$this->auth->isAdmin()) {
             header("Location: /");
             exit;
         }
     
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-           // $user = $this->auth->getUser(); // innen jön a user_id
 
             $affectedRows = $this->processNewsRequest();
     
@@ -38,41 +35,30 @@ class NewsController
     
       return $this->showNews();
     }
-
+    // Egy hír lekérdezése
     public function getNewById($id){
         return $user = $this->newsModel->getNewById($id);
     }
-
+    // Admin által szerkeszthető hírek betöltése
     public function showNews(){
         if (!$this->auth->isAuthenticated() || !$this->auth->isAdmin()) {
             header("Location: /");
             exit;
         }
-        // echo '<pre>';
-        // var_dump($this->newsModel->getAllNews());die;
-        // echo '</pre>';
-
+  
         $content = renderView('admin_news', [
             'news'  =>  $this->newsModel->getAllNews(),
         ]);
     
-        // AJAX kérés esetén csak a tartalom térjen vissza
         if (isAjaxRequest()) return $content;
-    
-        // Normál oldalbetöltés esetén jöhet a layout
-    
+        
         return renderLayout($content, [
             'user' => $this->auth->getUser(),
             'extraCss' => ''
         ]);
     }
-
-	private function processNewsRequest()
-    {
-        // if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {   improve idea
-        //     die("Érvénytelen CSRF token!");
-        // }
-        
+    
+	private function processNewsRequest(){
         if (isset($_POST['delete_news_id'])) {
             return $this->newsModel->deleteNew((int)$_POST['delete_news_id']);
         } elseif (isset($_POST['title'], $_POST['content'])) {

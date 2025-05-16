@@ -1,5 +1,5 @@
 <?php
-
+// Routeok definiálása
 return [
     ['', [\News\Controllers\GuestController::class, 'showHomePage']],
     ['new/{id}', [\News\Controllers\GuestController::class, 'showNew']],

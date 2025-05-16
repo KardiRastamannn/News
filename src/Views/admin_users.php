@@ -98,59 +98,12 @@
   </div>
 </div>
 <script>
-function openUserForm() {
-    document.getElementById('user-form').reset();
-    document.getElementById('user_id').value = '';
-}
-
-function editUser(id) {
-    fetch(`/admin/users/${id}`, {
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest'
-        }
-    })
-    .then(res => res.json()) // 🟢 A válaszból JSON objektumot csinálunk
-    .then(user => {
-        document.getElementById('user_id').value = user[0].user_id;
-        document.getElementById('email').value = user[0].email;
-        document.getElementById('role').value = user[0].role;
-        new bootstrap.Modal(document.getElementById('userModal')).show();
-    })
-    .catch(() => showToast('Hiba a felhasználó betöltésekor', 'danger'));
-}
-
-function deleteUser(id) {
-    if (confirm('Biztosan törlöd ezt a felhasználót?')) {
-        fetch('/admin/users', {
-            method: 'POST',
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: new URLSearchParams({ delete_user_id: id })
-        })
-        .then(res => res.text())
-        .then(text => {
-            console.log('Szerver válasz:', text);
-            if (text.trim() > 0) {
-                showToast('Sikeres törlés!', 'success');
-                sessionStorage.setItem('toastMessage', 'Sikeres törlés!');
-                sessionStorage.setItem('toastType', 'success');
-                location.reload();
-            } else {
-                showToast('Sikertelen törlés!', 'danger');
-            }
-        })
-        .catch(() => showToast('Sikertelen törlés!', 'danger'));
-    }
-}
-
-
 document.addEventListener('DOMContentLoaded', function () {
 	const messageBox = document.getElementById('ajax-message');
     const form = document.getElementById('user-form');
     if (!form) return;
 
+    // Form elküldése
 	form.addEventListener('submit', function (e) {
     e.preventDefault();
 
@@ -166,13 +119,11 @@ document.addEventListener('DOMContentLoaded', function () {
     .then(res => res.text())
     .then(text => {
         console.log('Szerver válasz:', text);
-        // Modal bezárás
 		bootstrap.Modal.getInstance(document.getElementById('userModal')).hide();
-        // Csak ha biztos, hogy a válasz '1', frissítünk
         if (text.trim() > 0 ) {
 			showToast('Sikeres mentés!', 'success');
 			sessionStorage.setItem('toastMessage', 'Sikeresen mentve!');
-			sessionStorage.setItem('toastType', 'success'); // vagy window.location.href = ...
+			sessionStorage.setItem('toastType', 'success'); 
             location.reload();
         }else{
 			showToast('Sikertelen mentés!', 'danger');
@@ -181,6 +132,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	.catch(() => showToast('Sikertelen mentés!', 'danger'));
     });
 
+    // Kereső a felhasználókhoz
     const searchInput = document.getElementById("newsSearchUsers");
     const tableBody = document.getElementById("user-table-body");
 
@@ -203,5 +155,54 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     });
 
+    // Új felhasználónál reseteli a formot
+    function openUserForm() {
+        document.getElementById('user-form').reset();
+        document.getElementById('user_id').value = '';
+    }
+
+    // Felhasználó szerkesztése AJAX-al
+    function editUser(id) {
+        fetch(`/admin/users/${id}`, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(res => res.json()) 
+        .then(user => {
+            document.getElementById('user_id').value = user[0].user_id;
+            document.getElementById('email').value = user[0].email;
+            document.getElementById('role').value = user[0].role;
+            new bootstrap.Modal(document.getElementById('userModal')).show();
+        })
+        .catch(() => showToast('Hiba a felhasználó betöltésekor', 'danger'));
+    }
+
+    // Felhasználó törlése AJAX-al
+    function deleteUser(id) {
+        if (confirm('Biztosan törlöd ezt a felhasználót?')) {
+            fetch('/admin/users', {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({ delete_user_id: id })
+            })
+            .then(res => res.text())
+            .then(text => {
+                console.log('Szerver válasz:', text);
+                if (text.trim() > 0) {
+                    showToast('Sikeres törlés!', 'success');
+                    sessionStorage.setItem('toastMessage', 'Sikeres törlés!');
+                    sessionStorage.setItem('toastType', 'success');
+                    location.reload();
+                } else {
+                    showToast('Sikertelen törlés!', 'danger');
+                }
+            })
+            .catch(() => showToast('Sikertelen törlés!', 'danger'));
+        }
+    }
 });
 </script>

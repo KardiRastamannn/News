@@ -9,27 +9,20 @@ class AdminController
 {
     private AuthService $auth;
 
-    public function __construct(Connection $connection)
-    {
-       // session_start();
+    public function __construct(Connection $connection){
         $this->auth = new AuthService($connection);
         if (session_status() !== PHP_SESSION_ACTIVE) {
             session_start();
         }
     }
 
-    public function logout()
-    {
+    public function logout(){
         session_destroy();
-    
-      
-    
-        // sima redirect
         header('Location: /');
         exit;
     
     }
-
+    // Admin dashboard betöltése
     public function showDashboard() {
         if (!$this->auth->isAuthenticated() || !$this->auth->isAdmin()) {
             header("Location: /");
@@ -40,17 +33,14 @@ class AdminController
             'user'  => $this->auth->getUser(),
         ]);
 
-        // AJAX kérés esetén csak a tartalom térjen vissza
         if (isAjaxRequest()) return $content;
-
-        // Normál oldalbetöltés esetén jöhet a layout
 
         return renderLayout($content, [
             'user' => $this->auth->getUser(),
             'extraCss' => '',
         ]);
     }
-
+    
     public function login(){
         if ($this->auth->isAuthenticated()) {
             header("Location: /admin/dashboard");
@@ -73,12 +63,10 @@ class AdminController
 
         $content = renderView('login', [
             'user'  => $this->auth->getUser(),
+            'error' => $error,
         ]);
 
-        // AJAX kérés esetén csak a tartalom térjen vissza
         if (isAjaxRequest()) return $content;
-
-        // Normál oldalbetöltés esetén jöhet a layout
     
         return renderLayout($content, [
             'user' => $this->auth->getUser(),

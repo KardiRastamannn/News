@@ -16,18 +16,15 @@ class AuthService
         }
     }
 
- public function login(string $email, string $password): bool
-{
+ public function login(string $email, string $password): bool {
     $user = $this->userModel->getUserByEmail($email);
 
-    // Ellenőrizd, hogy van-e találat
     if (empty($user)) {
         return false;
     }
 
     $user = $user[0];
 
-    // Ellenőrizd a jelszót
     if (password_verify($password, $user['password'])) {
         $_SESSION['user'] = [
             'id' => $user['user_id'],
@@ -40,25 +37,21 @@ class AuthService
     return false;
 }
 
-    public function logout(): void
-    {
+    public function logout(): void {
         session_destroy();
         header("Location: /");
         exit;
     }
 
-    public function isAuthenticated(): bool
-    {
+    public function isAuthenticated(): bool {
         return isset($_SESSION['user']);
     }
 
-    public function isAdmin(): bool
-    {
+    public function isAdmin(): bool {
         return $this->isAuthenticated() && $_SESSION['user']['role'] === 'admin';
     }
 
-    public function getUser(): ?array
-    {
+    public function getUser(): ?array {
         return $_SESSION['user'] ?? null;
     }
 }

@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/../src/Core/HelperFunctions.php'; // Csak ha globális render függvényt használsz
+require_once __DIR__ . '/../src/Core/HelperFunctions.php'; // Globális függvények betöltése
 
 session_start();
 
@@ -25,5 +25,5 @@ $router->addErrorHandler(404, function() {
 
 // Kérés feldolgozása
 $url = $_SERVER['REQUEST_URI'] ?? '/';
-$url = parse_url($url, PHP_URL_PATH); // levágja a ? utáni részt
+$url = parse_url($url, PHP_URL_PATH);
 echo $router->dispatch($url);
