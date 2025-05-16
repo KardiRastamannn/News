@@ -23,7 +23,7 @@
                 <i class="fas fa-blog me-2"></i>Hírek kezelése
             </h2>
             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newModal" onclick="openNewForm()">
-                <i class="fas fa-plus me-2"></i>Új
+                <i class="fas fa-plus me-2"></i>Új hír
             </button>
         </div>
         <div class="mb-3">
