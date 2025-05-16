@@ -98,6 +98,55 @@
   </div>
 </div>
 <script>
+    // Új felhasználónál reseteli a formot
+    function openUserForm() {
+        document.getElementById('user-form').reset();
+        document.getElementById('user_id').value = '';
+    }
+
+    // Felhasználó szerkesztése AJAX-al
+    function editUser(id) {
+        fetch(`/admin/users/${id}`, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(res => res.json()) 
+        .then(user => {
+            document.getElementById('user_id').value = user[0].user_id;
+            document.getElementById('email').value = user[0].email;
+            document.getElementById('role').value = user[0].role;
+            new bootstrap.Modal(document.getElementById('userModal')).show();
+        })
+        .catch(() => showToast('Hiba a felhasználó betöltésekor', 'danger'));
+    }
+
+    // Felhasználó törlése AJAX-al
+    function deleteUser(id) {
+        if (confirm('Biztosan törlöd ezt a felhasználót?')) {
+            fetch('/admin/users', {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({ delete_user_id: id })
+            })
+            .then(res => res.text())
+            .then(text => {
+                console.log('Szerver válasz:', text);
+                if (text.trim() > 0) {
+                    showToast('Sikeres törlés!', 'success');
+                    sessionStorage.setItem('toastMessage', 'Sikeres törlés!');
+                    sessionStorage.setItem('toastType', 'success');
+                    location.reload();
+                } else {
+                    showToast('Sikertelen törlés!', 'danger');
+                }
+            })
+            .catch(() => showToast('Sikertelen törlés!', 'danger'));
+        }
+    }
 document.addEventListener('DOMContentLoaded', function () {
 	const messageBox = document.getElementById('ajax-message');
     const form = document.getElementById('user-form');
@@ -155,54 +204,5 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     });
 
-    // Új felhasználónál reseteli a formot
-    function openUserForm() {
-        document.getElementById('user-form').reset();
-        document.getElementById('user_id').value = '';
-    }
-
-    // Felhasználó szerkesztése AJAX-al
-    function editUser(id) {
-        fetch(`/admin/users/${id}`, {
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        })
-        .then(res => res.json()) 
-        .then(user => {
-            document.getElementById('user_id').value = user[0].user_id;
-            document.getElementById('email').value = user[0].email;
-            document.getElementById('role').value = user[0].role;
-            new bootstrap.Modal(document.getElementById('userModal')).show();
-        })
-        .catch(() => showToast('Hiba a felhasználó betöltésekor', 'danger'));
-    }
-
-    // Felhasználó törlése AJAX-al
-    function deleteUser(id) {
-        if (confirm('Biztosan törlöd ezt a felhasználót?')) {
-            fetch('/admin/users', {
-                method: 'POST',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: new URLSearchParams({ delete_user_id: id })
-            })
-            .then(res => res.text())
-            .then(text => {
-                console.log('Szerver válasz:', text);
-                if (text.trim() > 0) {
-                    showToast('Sikeres törlés!', 'success');
-                    sessionStorage.setItem('toastMessage', 'Sikeres törlés!');
-                    sessionStorage.setItem('toastType', 'success');
-                    location.reload();
-                } else {
-                    showToast('Sikertelen törlés!', 'danger');
-                }
-            })
-            .catch(() => showToast('Sikertelen törlés!', 'danger'));
-        }
-    }
 });
 </script>
