@@ -91,6 +91,7 @@ Példa: GuestController kap Connection és AuthService objektumokat a konstrukto
 - Memcached használata gyakran lekérdezett adatokhoz.
 - Lazy loading képekhez
 - Low-code admin felület
+- Language model bevezetése, dictionary használata, traitek használata.
 
 
 
